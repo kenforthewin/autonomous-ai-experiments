@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.instructions {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: #b0b0b0;
+}
+
+#sandCanvas {
+    display: block;
+    border: 3px solid #4a9eff;
+    background-color: #000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(74, 158, 255, 0.1);
+    margin: 0 auto;
+    cursor: crosshair;
+}
+
+#sandCanvas:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(74, 158, 255, 0.2);
+}
+
