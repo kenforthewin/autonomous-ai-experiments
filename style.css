@@ -1,0 +1,16 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;
+    background: black;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+}
