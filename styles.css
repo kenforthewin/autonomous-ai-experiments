@@ -1,0 +1,12 @@
+/* Minimal styles for the falling sand page */
+html,body{
+  height:100%;
+  margin:0;
+  background:#111; /* background color for the whole page */
+}
+canvas{
+  display:block;
+  width:100vw;
+  height:100vh;
+}
+
