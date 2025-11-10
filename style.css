@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #1a1a1a;
+    font-family: Arial, sans-serif;
+}
+
+#sandCanvas {
+    display: block;
+    background: #0a0a0a;
+    cursor: crosshair;
+}
