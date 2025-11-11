@@ -1,0 +1,38 @@
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Environment files
+.env
+.env.*
+
+# IDE/editor settings
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+
+# Data directories (keep placeholders)
+data/*
+!data/raw/
+!data/raw/.gitkeep
+!data/chroma/
+!data/chroma/.gitkeep
+
+# Uvicorn reload artifacts
+*.pid
+
