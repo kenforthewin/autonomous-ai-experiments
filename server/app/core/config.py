@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     rag_embed_model: str = Field(default="text-embedding-3-small", validation_alias="RAG_EMBED_MODEL")
     rag_gen_model: str = Field(default="gpt-4o-mini", validation_alias="RAG_GEN_MODEL")
+    offline_mode: bool = Field(default=False, validation_alias="OFFLINE_MODE")
 
     data_dir: str = Field(default="./data", validation_alias="DATA_DIR")
     lancedb_dir: str = Field(default="./data/lancedb", validation_alias="LANCEDB_DIR")
@@ -58,4 +59,16 @@ def get_settings() -> Settings:
         ):
             directory.mkdir(parents=True, exist_ok=True)
     return _cached_settings
+
+
+def set_settings(settings: Settings | None) -> None:
+    global _cached_settings
+    _cached_settings = settings
+    if settings is not None:
+        for directory in (
+            settings.data_dir_path,
+            settings.lancedb_path,
+            settings.file_storage_path,
+        ):
+            directory.mkdir(parents=True, exist_ok=True)
 

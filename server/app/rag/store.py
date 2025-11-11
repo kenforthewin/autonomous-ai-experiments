@@ -59,7 +59,7 @@ def upsert_chunks(
 
     db = _get_db()
     if not _table_exists(db):
-        db.create_table(_TABLE_NAME, data=records, primary_key="id")
+        db.create_table(_TABLE_NAME, data=records)
         return
 
     table = db.open_table(_TABLE_NAME)
@@ -90,7 +90,10 @@ def search(
 
     query = table.search(query_vector).limit(k)
     if filter_labels:
-        query = query.where(lambda record: any(label in record["labels"] for label in filter_labels))
+        sanitized = [label.replace("'", "''") for label in filter_labels if label]
+        if sanitized:
+            labels_array = ",".join(f"'{label}'" for label in sanitized)
+            query = query.where(f"array_has_any(labels, [{labels_array}])")
 
     results = query.to_list()
     return results

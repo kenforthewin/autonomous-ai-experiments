@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health
+from app.api import documents, health, query, wiki
 from app.core.config import Settings, get_settings
 from app.db.base import init_db
 
@@ -41,6 +41,9 @@ def _configure_cors(app: FastAPI) -> None:
 
 def _include_routes(app: FastAPI) -> None:
     app.include_router(health.router)
+    app.include_router(documents.router)
+    app.include_router(query.router)
+    app.include_router(wiki.router)
 
 
 app = create_app()

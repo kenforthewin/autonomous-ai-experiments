@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import contextlib
-from typing import Iterator
+from __future__ import annotations
+
+from typing import Generator
 
 from sqlmodel import Session, SQLModel, create_engine
 
@@ -23,8 +24,7 @@ def init_db() -> None:
     SQLModel.metadata.create_all(engine)
 
 
-@contextlib.contextmanager
-def get_session() -> Iterator[Session]:
+def get_session() -> Generator[Session, None, None]:
     engine = get_engine()
     with Session(engine) as session:
         yield session

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from app.services.utils import normalize_text
+__all__ = [
+    "normalize_text",
+]
 
-__all__ = ["normalize_text"]
+from app.services.utils import normalize_text  # noqa: E402
 
