@@ -26,6 +26,10 @@ def test_create_note_offline(test_client: TestClient) -> None:
     assert detail["id"] == doc_id
     assert "astronomy" in detail["labels"]
 
+    content = detail.get("content")
+    assert content is not None
+    assert "sample note" in content
+
     list_response = test_client.get("/documents")
     assert list_response.status_code == 200
     listed = list_response.json()["documents"]

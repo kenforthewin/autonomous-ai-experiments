@@ -179,11 +179,16 @@ async def get_document(document_id: UUID, session: Session = Depends(get_session
     document = session.get(Document, document_id)
     if not document:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
-    content = None
-    try:
-        content = Path(document.text_path).read_text(encoding="utf-8")
-    except (OSError, ValueError):
-        content = None
+    content: Optional[str] = None
+    text_path = Path(document.text_path)
+    if text_path.exists():
+        try:
+            if text_path.suffix.lower() in {".md", ".txt"}:
+                content = text_path.read_text(encoding="utf-8")
+            else:
+                content = parse_file(text_path)
+        except Exception:
+            content = None
     return {
         "id": str(document.id),
         "title": document.title,
