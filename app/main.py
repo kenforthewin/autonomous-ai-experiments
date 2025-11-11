@@ -58,7 +58,7 @@ class SPAStaticFiles(StaticFiles):
 
 
 app = FastAPI(title="Personal RAG Backend", version="0.1.0")
-
+app.include_router(upload_router)
 allowed_origins = ["http://localhost:3000", "http://localhost:8000"]
 app.add_middleware(
     CORSMiddleware,
@@ -74,9 +74,6 @@ async def health_check() -> dict[str, str]:
     """Return simple health status."""
 
     return {"status": "ok"}
-
-
-app.include_router(upload_router)
 
 app.mount("/", SPAStaticFiles(directory=PUBLIC_DIR, index_file=INDEX_FILE), name="public")
 
