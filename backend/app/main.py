@@ -1,10 +1,17 @@
 """FastAPI application entry point."""
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
+from app.core.exceptions import (
+    DocumentNotFoundError,
+    InvalidFileTypeError,
+    FileTooLargeError,
+    EmbeddingError
+)
 from app.api import health, documents, queries
 
 
@@ -48,6 +55,35 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Add exception handlers
+    @app.exception_handler(DocumentNotFoundError)
+    async def document_not_found_handler(request: Request, exc: DocumentNotFoundError):
+        return JSONResponse(
+            status_code=404,
+            content={"detail": str(exc)}
+        )
+
+    @app.exception_handler(InvalidFileTypeError)
+    async def invalid_file_type_handler(request: Request, exc: InvalidFileTypeError):
+        return JSONResponse(
+            status_code=400,
+            content={"detail": str(exc)}
+        )
+
+    @app.exception_handler(FileTooLargeError)
+    async def file_too_large_handler(request: Request, exc: FileTooLargeError):
+        return JSONResponse(
+            status_code=413,
+            content={"detail": str(exc)}
+        )
+
+    @app.exception_handler(EmbeddingError)
+    async def embedding_error_handler(request: Request, exc: EmbeddingError):
+        return JSONResponse(
+            status_code=500,
+            content={"detail": str(exc)}
+        )
 
     # Include routers
     app.include_router(health.router)
