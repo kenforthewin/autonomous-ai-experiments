@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Sand Cellular Automata</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            background: #1a1a1a;
+            cursor: crosshair;
+        }
+
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            opacity: 0.8;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="sandCanvas"></canvas>
+    <div class="info">Left-click to place sand • Sand falls from top center</div>
+    
+    <script>
+        const canvas = document.getElementById('sandCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Canvas setup
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Grid configuration
+        const CELL_SIZE = 2; // Size of each cell in pixels
+        const COLS = Math.floor(canvas.width / CELL_SIZE);
+        const ROWS = Math.floor(canvas.height / CELL_SIZE);
+
+        // Sand particle types
+        const EMPTY = 0;
+        const SAND = 1;
+
+        // Grid initialization
+        let grid = [];
+        let nextGrid = [];
+
+        function initGrid() {
+            grid = [];
+            nextGrid = [];
+            for (let i = 0; i < ROWS; i++) {
+                grid[i] = new Array(COLS).fill(EMPTY);
+                nextGrid[i] = new Array(COLS).fill(EMPTY);
+            }
+        }
+        initGrid();
+
+        // Sand generation
+        let sandGenerationTimer = 0;
+        const SAND_GENERATION_INTERVAL = 2; // Generate sand every N frames
+        const SAND_GENERATION_RATE = 3; // Number of sand particles per generation
+
+        function generateSandAtTop() {
+            sandGenerationTimer++;
+            if (sandGenerationTimer >= SAND_GENERATION_INTERVAL) {
+                sandGenerationTimer = 0;
+                const centerX = Math.floor(COLS / 2);
+                
+                for (let i = 0; i < SAND_GENERATION_RATE; i++) {
+                    const x = centerX + Math.floor(Math.random() * 5) - 2; // Spread around center
+                    if (x >= 0 && x < COLS) {
+                        // Find the first empty spot from top
+                        for (let y = 0; y < 5; y++) {
+                            if (grid[y][x] === EMPTY) {
+                                grid[y][x] = SAND;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sand physics
+        function updateSand() {
+            // Clear next grid
+            for (let i = 0; i < ROWS; i++) {
+                nextGrid[i].fill(EMPTY);
+            }
+
+            // Process each cell from bottom to top for proper falling
+            for (let y = ROWS - 1; y >= 0; y--) {
+                for (let x = 0; x < COLS; x++) {
+                    if (grid[y][x] === SAND) {
+                        let moved = false;
+
+                        // Try to fall straight down
+                        if (y < ROWS - 1 && nextGrid[y + 1][x] === EMPTY) {
+                            nextGrid[y + 1][x] = SAND;
+                            moved = true;
+                        } 
+                        // Try to fall diagonally left
+                        else if (y < ROWS - 1 && x > 0 && nextGrid[y + 1][x - 1] === EMPTY) {
+                            nextGrid[y + 1][x - 1] = SAND;
+                            moved = true;
+                        }
+                        // Try to fall diagonally right
+                        else if (y < ROWS - 1 && x < COLS - 1 && nextGrid[y + 1][x + 1] === EMPTY) {
+                            nextGrid[y + 1][x + 1] = SAND;
+                            moved = true;
+                        }
+                        // Try to slide left if at bottom
+                        else if (y === ROWS - 1 && x > 0 && nextGrid[y][x - 1] === EMPTY && Math.random() < 0.3) {
+                            nextGrid[y][x - 1] = SAND;
+                            moved = true;
+                        }
+                        // Try to slide right if at bottom
+                        else if (y === ROWS - 1 && x < COLS - 1 && nextGrid[y][x + 1] === EMPTY && Math.random() < 0.3) {
+                            nextGrid[y][x + 1] = SAND;
+                            moved = true;
+                        }
+
+                        // If couldn't move, stay in place
+                        if (!moved) {
+                            nextGrid[y][x] = SAND;
+                        }
+                    }
+                }
+            }
+
+            // Swap grids
+            [grid, nextGrid] = [nextGrid, grid];
+        }
+
+        // Mouse interaction
+        let isMouseDown = false;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isMouseDown = false;
+        });
+
+        // Touch support for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isMouseDown = true;
+            const touch = e.touches[0];
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+        });
+
+        canvas.addEventListener('touchend', () => {
+            isMouseDown = false;
+        });
+
+        function placeSandAtMouse() {
+            if (!isMouseDown) return;
+
+            const gridX = Math.floor(mouseX / CELL_SIZE);
+            const gridY = Math.floor(mouseY / CELL_SIZE);
+
+            // Place sand in a small area around the mouse
+            const brushSize = 3;
+            for (let dy = -brushSize; dy <= brushSize; dy++) {
+                for (let dx = -brushSize; dx <= brushSize; dx++) {
+                    const x = gridX + dx;
+                    const y = gridY + dy;
+                    
+                    // Check if within bounds and create circular brush
+                    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance <= brushSize && Math.random() < 0.8) {
+                            if (grid[y][x] === EMPTY) {
+                                grid[y][x] = SAND;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Rendering
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw sand particles
+            ctx.fillStyle = '#f4e4c1'; // Sandy color
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (grid[y][x] === SAND) {
+                        ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    }
+                }
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            generateSandAtTop();
+            placeSandAtMouse();
+            updateSand();
+            render();
+            requestAnimationFrame(animate);
+        }
+
+        // Start animation
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            // Reinitialize grid with new dimensions
+            initGrid();
+        });
+    </script>
+</body>
+</html>
