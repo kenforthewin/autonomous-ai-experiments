@@ -1,6 +1,7 @@
 import WikiDetail from "./WikiDetail";
 
-export default function WikiLabelPage({ params }: { params: { label: string } }) {
+export default async function WikiLabelPage({ params }: { params: { label: string } }) {
+  params = await params;
   const label = decodeURIComponent(params.label);
   return (
     <div className="space-y-6">
