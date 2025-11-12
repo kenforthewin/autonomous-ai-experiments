@@ -1,0 +1,49 @@
+# See https://github.com/github/gitignore/blob/main/Node.gitignore
+
+# Node
+node_modules/
+.npm
+.pnpm-store/
+.pnpm-debug.log
+
+# pnpm
+
+# Vite / build outputs
+-dist/
+dist/
+build/
+.vite/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.test
+.env*.local
+
+# Prisma
+apps/server/prisma/dev.db
+apps/server/prisma/client/
+*.db
+*.sqlite
+
+# Coverage
+coverage/
+
+# Misc
+*.pid
+*.seed
+

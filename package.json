@@ -1,0 +1,30 @@
+{
+  "name": "vtt-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=22.10 <23"
+  },
+  "scripts": {
+    "postinstall": "prisma generate --schema apps/server/prisma/schema.prisma || true",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down -v",
+    "db:migrate": "prisma migrate dev --schema apps/server/prisma/schema.prisma",
+    "db:seed": "ts-node --project apps/server/tsconfig.json apps/server/prisma/seed.ts || node apps/server/dist/prisma/seed.js || true",
+    "dev": "concurrently -n web,server -c \"bgBlue.bold,bgGreen.bold\" \"pnpm --filter web dev\" \"pnpm --filter server dev\""
+  },
+  "dependencies": {
+    "@prisma/client": "^6.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
+    "prisma": "^6.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "wait-on": "^7.2.0"
+  }
+}
+
