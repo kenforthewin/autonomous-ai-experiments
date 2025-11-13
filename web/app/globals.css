@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900 antialiased;
+  }
+
+  a {
+    @apply text-blue-600 hover:text-blue-700 underline-offset-4;
+  }
+}
+
+@layer utilities {
+  .card {
+    @apply rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition hover:shadow-md;
+  }
+}
+
